@@ -2,14 +2,18 @@
 
 All notable changes to Midnight Profession Tracker will be documented here.
 
-## [1.0.1-beta] - 2026-04-02
+## [12.0.2-beta] - 2026-04-03
 
 ### Changed
-- Fixed README Requirements section incorrectly listing "The War Within" — corrected to "Midnight"
+- Version renamed to match the expansion format (`12.x.x` for The War Within / Midnight patch 12.0)
 
 ---
 
-## [1.0.0-beta] - 2026-04-02
+## [12.0.1-beta] - 2026-04-03
+- Updated addon icon from `Trade_Alchemy` to `inv_toy_booklibrary` in both `## IconTexture` (.toc) and the minimap button texture
+- Fixed README Requirements section to correctly state "The War Within"
+
+## [12.0.0-beta] - 2026-04-02
 
 ### Added
 - Initial beta release
