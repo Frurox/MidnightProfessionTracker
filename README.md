@@ -118,7 +118,7 @@ This addon uses a `.pkgmeta` file compatible with the **CurseForge** and **WoWIn
 
 ## Requirements
 
-- World of Warcraft: **The War Within** (Interface version 120001)
+- World of Warcraft: **Midnight** (Interface version 120001)
 - No external library dependencies — LibStub is bundled in `Libs/`
 
 ## License

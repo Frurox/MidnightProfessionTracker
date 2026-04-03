@@ -2,6 +2,13 @@
 
 All notable changes to Midnight Profession Tracker will be documented here.
 
+## [1.0.1-beta] - 2026-04-02
+
+### Changed
+- Fixed README Requirements section incorrectly listing "The War Within" — corrected to "Midnight"
+
+---
+
 ## [1.0.0-beta] - 2026-04-02
 
 ### Added
