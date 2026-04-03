@@ -550,6 +550,7 @@ local minimapShapes = {
 -- Position the button on the minimap border, respecting the minimap shape.
 -- 'angle' is in degrees (0-360, measured counter-clockwise from east).
 local function UpdateMinimapPos(angle)
+  angle = angle % 360
   MPTCharDB.minimapAngle = angle
   local rad = math.rad(angle)
   local x, y = math.cos(rad), math.sin(rad)
