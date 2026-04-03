@@ -112,6 +112,54 @@ User-facing strings live in `Locales/enUS.lua` using the `L["KEY"]` pattern. To 
 2. Replace values with translated strings (keep keys unchanged).
 3. Add the new file to `MidnightProfTracker.toc` before `Options.lua`.
 
+## Releasing a New Version
+
+GitHub Releases are created automatically by the CI workflow whenever a version tag is pushed.
+
+### Tagging conventions
+
+Version tags must follow the pattern `v<major>.<minor>.<patch>` (e.g., `v1.2.3`).
+
+### How to cut a release
+
+1. Update the version in `MidnightProfTracker.toc` (the `## Version:` line).
+2. Update `CHANGELOG.md` with the changes for this release.
+3. Commit the changes:
+   ```bash
+   git add MidnightProfTracker.toc CHANGELOG.md
+   git commit -m "Release v1.2.3"
+   ```
+4. Create and push the version tag:
+   ```bash
+   git tag v1.2.3
+   git push origin v1.2.3
+   ```
+5. The GitHub Actions workflow (`.github/workflows/release.yml`) will automatically:
+   - Build `MidnightProfTracker-v1.2.3.zip`
+   - Create a GitHub Release for the tag with auto-generated release notes
+   - Attach the zip as a release asset
+
+### What gets packaged
+
+The zip contains a `MidnightProfTracker/` folder at the archive root with:
+
+| Included | Excluded |
+|---|---|
+| `*.toc`, `*.lua`, `*.xml` | `.git/` — version-control history |
+| `Libs/` — bundled libraries | `.github/` — CI/workflow files |
+| `Locales/` — localization files | `.pkgmeta` — CurseForge packager config |
+| `README.md`, `CHANGELOG.md`, `LICENSE` | |
+
+Extracting the zip places `MidnightProfTracker/` directly inside `Interface/AddOns/`, which is the structure WoW expects.
+
+### Installing from a release
+
+Download `MidnightProfTracker-<version>.zip` from the [Releases page](../../releases), extract it, and place the `MidnightProfTracker/` folder in:
+
+```
+World of Warcraft\_retail_\Interface\AddOns\
+```
+
 ## Packaging
 
 This addon uses a `.pkgmeta` file compatible with the **CurseForge** and **WoWInterface** BigWigs packager. `embeds.xml` loads all bundled libraries from the `Libs/` folder.
