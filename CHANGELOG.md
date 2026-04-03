@@ -2,6 +2,13 @@
 
 All notable changes to Midnight Profession Tracker will be documented here.
 
+## [12.0.3-beta] - 2026-04-03
+
+### Changed
+- Minimap button now stays on the border correctly whether your minimap is round or square
+
+---
+
 ## [12.0.2-beta] - 2026-04-03
 
 ### Changed

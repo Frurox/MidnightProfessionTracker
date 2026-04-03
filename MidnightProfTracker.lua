@@ -526,11 +526,58 @@ mmBorder:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
 mmBorder:SetSize(56, 56)
 mmBorder:SetPoint("TOPLEFT")
 
--- Position the button around the edge of the minimap
+-- Shape table: each entry lists the 4 quadrants (q=1..4) that are "round".
+-- Quadrant is determined by sign of cos/sin: q=1 (x>=0,y<=0), +1 if x<0, +2 if y>0.
+-- When a quadrant is round the button sits on the circular edge; otherwise it is
+-- clamped to the square edge (matching LibDBIcon-1.0 behaviour).
+local minimapShapes = {
+  ["ROUND"]                = {true,  true,  true,  true },
+  ["SQUARE"]               = {false, false, false, false},
+  ["CORNER-TOPLEFT"]       = {false, false, false, true },
+  ["CORNER-TOPRIGHT"]      = {false, false, true,  false},
+  ["CORNER-BOTTOMLEFT"]    = {false, true,  false, false},
+  ["CORNER-BOTTOMRIGHT"]   = {true,  false, false, false},
+  ["SIDE-LEFT"]            = {false, true,  false, true },
+  ["SIDE-RIGHT"]           = {true,  false, true,  false},
+  ["SIDE-TOP"]             = {false, false, true,  true },
+  ["SIDE-BOTTOM"]          = {true,  true,  false, false},
+  ["TRICORNER-TOPLEFT"]    = {false, true,  true,  true },
+  ["TRICORNER-TOPRIGHT"]   = {true,  false, true,  true },
+  ["TRICORNER-BOTTOMLEFT"] = {true,  true,  false, true },
+  ["TRICORNER-BOTTOMRIGHT"]= {true,  true,  true,  false},
+}
+
+-- Position the button on the minimap border, respecting the minimap shape.
+-- 'angle' is in degrees (0-360, measured counter-clockwise from east).
 local function UpdateMinimapPos(angle)
   MPTCharDB.minimapAngle = angle
   local rad = math.rad(angle)
-  minimapButton:SetPoint("CENTER", Minimap, "CENTER", math.cos(rad) * 80, math.sin(rad) * 80)
+  local x, y = math.cos(rad), math.sin(rad)
+
+  -- Determine which quadrant we are in (1-4)
+  local q = 1
+  if x < 0 then q = q + 1 end
+  if y > 0 then q = q + 2 end
+
+  local shape      = GetMinimapShape and GetMinimapShape() or "ROUND"
+  local quadTable  = minimapShapes[shape] or minimapShapes["ROUND"]
+  -- Outer edge: half the minimap size plus a small gap (5 px, same as LibDBIcon)
+  local w = (Minimap:GetWidth()  / 2) + 5
+  local h = (Minimap:GetHeight() / 2) + 5
+
+  if quadTable[q] then
+    -- Circular quadrant: project straight onto the ellipse edge
+    x, y = x * w, y * h
+  else
+    -- Square quadrant: clamp to the square border
+    local diagW = math.sqrt(2 * w ^ 2) - 10
+    local diagH = math.sqrt(2 * h ^ 2) - 10
+    x = math.max(-w, math.min(x * diagW,  w))
+    y = math.max(-h, math.min(y * diagH, h))
+  end
+
+  minimapButton:ClearAllPoints()
+  minimapButton:SetPoint("CENTER", Minimap, "CENTER", x, y)
 end
 
 -- Dragging
@@ -541,8 +588,10 @@ minimapButton:SetScript("OnDragStart", function(self)
   self:SetScript("OnUpdate", function()
     local mx, my = Minimap:GetCenter()
     local cx, cy = GetCursorPosition()
-    local scale  = UIParent:GetScale()
-    UpdateMinimapPos(math.deg(math.atan2(cy / scale - my, cx / scale - mx)))
+    -- Use the minimap's own effective scale for accurate cursor mapping
+    local scale  = Minimap:GetEffectiveScale()
+    local angle  = math.deg(math.atan2(cy / scale - my, cx / scale - mx)) % 360
+    UpdateMinimapPos(angle)
   end)
 end)
 minimapButton:SetScript("OnDragStop", function(self)
