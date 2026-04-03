@@ -1,0 +1,12 @@
+package-as: MidnightProfTracker
+
+enable-nolib-creation: yes
+
+embeds-path: Libs
+
+ignore:
+  - .pkgmeta
+  - .github
+  - README.md
+  - CHANGELOG.md
+  - LICENSE
