@@ -570,11 +570,14 @@ local function UpdateMinimapPos(angle)
     -- Circular quadrant: project straight onto the ellipse edge
     x, y = x * w, y * h
   else
-    -- Square quadrant: clamp to the square border
-    local diagW = math.sqrt(2 * w ^ 2) - 10
-    local diagH = math.sqrt(2 * h ^ 2) - 10
-    x = math.max(-w, math.min(x * diagW,  w))
-    y = math.max(-h, math.min(y * diagH, h))
+    -- Square quadrant: project the direction ray to the rectangle border
+    local scale = math.max(math.abs(x), math.abs(y))
+    if scale > 0 then
+      x = (x / scale) * w
+      y = (y / scale) * h
+    else
+      x, y = 0, 0
+    end
   end
 
   minimapButton:ClearAllPoints()
