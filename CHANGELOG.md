@@ -2,6 +2,14 @@
 
 All notable changes to Midnight Profession Tracker will be documented here.
 
+## [12.0.4-beta] - 2026-04-06
+
+### Changed
+- Minimap button: settings now open via **Shift+Left-click** (replaces middle-click)
+- Minimap tooltip updated to reflect the new keybind
+- `Settings.OpenToCategory` now correctly receives the numeric category ID via `:GetID()` instead of the raw category table, resolving a Lua error on open
+---
+
 ## [12.0.3-beta] - 2026-04-03
 
 ### Changed

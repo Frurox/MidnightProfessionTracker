@@ -488,7 +488,7 @@ SlashCmdList["MIDNIGHTPROF"] = function(msg)
       MPTCharDB.autoRun and L["ON"] or L["OFF"]))
   elseif arg == "config" then
     if ns.optionsCategory then
-      Settings.OpenToCategory(ns.optionsCategory)
+      Settings.OpenToCategory(ns.optionsCategory:GetID())
     end
   elseif arg == "help" then
     PrintHelp()
@@ -604,15 +604,15 @@ minimapButton:SetScript("OnDragStop", function(self)
 end)
 
 -- Clicks
-minimapButton:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp")
+minimapButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 minimapButton:SetScript("OnClick", function(self, button)
   if mmDragging then return end
   PrecacheAllItems()
   if button == "RightButton" then
     RunWhenItemsCached(function() MidnightBooks(false) end)
-  elseif button == "MiddleButton" then
+  elseif button == "LeftButton" and IsShiftKeyDown() then
     if ns.optionsCategory then
-      Settings.OpenToCategory(ns.optionsCategory)
+      Settings.OpenToCategory(ns.optionsCategory:GetID())
     end
   else
     RunWhenItemsCached(function() MidnightProf(false) end)
@@ -622,10 +622,11 @@ end)
 -- Tooltip
 minimapButton:SetScript("OnEnter", function(self)
   GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-  GameTooltip:AddLine(L["MINIMAP_TOOLTIP_TITLE"], 1, 0.82, 0)
-  GameTooltip:AddLine(L["MINIMAP_TOOLTIP_LEFT"],  1, 1, 1)
-  GameTooltip:AddLine(L["MINIMAP_TOOLTIP_RIGHT"], 1, 1, 1)
-  GameTooltip:AddLine(L["MINIMAP_TOOLTIP_DRAG"],  0.6, 0.6, 0.6)
+  GameTooltip:AddLine(L["MINIMAP_TOOLTIP_TITLE"],  1, 0.82, 0)
+  GameTooltip:AddLine(L["MINIMAP_TOOLTIP_LEFT"],   1, 1, 1)
+  GameTooltip:AddLine(L["MINIMAP_TOOLTIP_RIGHT"],  1, 1, 1)
+  GameTooltip:AddLine(L["MINIMAP_TOOLTIP_MIDDLE"], 1, 1, 1)
+  GameTooltip:AddLine(L["MINIMAP_TOOLTIP_DRAG"],   0.6, 0.6, 0.6)
   GameTooltip:Show()
 end)
 minimapButton:SetScript("OnLeave", function()
