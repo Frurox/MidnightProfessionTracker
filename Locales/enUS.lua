@@ -39,4 +39,5 @@ L["OPT_AUTORUN_TOOLTIP"]    = "Automatically show missing items when logging in 
 L["MINIMAP_TOOLTIP_TITLE"]  = "Midnight Profession Tracker"
 L["MINIMAP_TOOLTIP_LEFT"]   = "Left-click: Show missing treasures"
 L["MINIMAP_TOOLTIP_RIGHT"]  = "Right-click: Show missing books"
+L["MINIMAP_TOOLTIP_SETTINGS"] = "Shift+Left-click: Open settings"
 L["MINIMAP_TOOLTIP_DRAG"]   = "Drag: Move button"
