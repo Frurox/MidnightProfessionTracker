@@ -7,7 +7,8 @@ A World of Warcraft addon for **The War Within / Midnight** that tracks missing 
 - **Profession Treasures** — Lists all uncollected profession treasure items across all Midnight zones, grouped by profession and sorted by zone.
 - **Knowledge Books** — Tracks purchaseable profession knowledge books, showing vendor name, faction/renown requirement or currency cost, and a clickable map pin.
 - **Clickable Waypoints** — Every missing item and vendor includes a `[📍 Name]` chat link that opens the world map at the exact coordinates.
-- **Minimap Button** — Draggable button on the minimap (left-click: treasures, right-click: books, middle-click: settings). Position is saved per character.
+- **Minimap Button** — Draggable button on the minimap (left-click: treasures, right-click: books, Shift+Left-click: settings). Position is saved per character.
+- **Addon Compartment Button** — Click the puzzle-piece icon in the top bar (left-click: treasures, right-click: books). No slash command needed.
 - **Settings Panel** — Accessible via `/mpt config`, Shift+Left-click on the minimap button, or Game Menu → Interface → AddOns.
 - **Auto-run on Login/Reload** — Automatically shows missing items on login or UI reload. Toggleable per character via settings or `/mpt autorun`.
 - **Per-character Tracking** — `SavedVariablesPerCharacter` tracks the auto-run preference and minimap button position independently per character.
