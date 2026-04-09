@@ -2,7 +2,21 @@
 
 All notable changes to Midnight Profession Tracker will be documented here.
 
-## [12.0.4-beta] - 2026-04-06
+## [12.0.1-Release] - 2026-04-08
+
+### Changed
+- Initial release
+- Replaced custom hand-rolled minimap button with **LibDataBroker-1.1 + LibDBIcon-1.0** for proper circular border, centering, and drag behaviour (matching Simulationcraft)
+- Addon Compartment registration moved from `## AddonCompartmentFunc` (TOC) to `AddonCompartmentFrame:RegisterAddon` in Lua, matching Simulationcraft's approach
+- Custom logo (`logo.tga`) replaces the old generic icon — auto-cropped from the original 1024×1024 PNG to remove excess padding, giving a larger, crisper icon across the minimap button, addon list, and compartment
+- Bundled `Libs/LibDataBroker-1.1` and `Libs/LibDBIcon-1.0` (copied from Simulationcraft)
+- `MPTCharDB.minimap` saved-variable table added to persist minimap button hide/show state via LibDBIcon
+- Minimap button size uses LibDBIcon default (31×31 px) — logo now fills the button fully with no wasted padding
+- `embeds.xml` updated to load `LibDataBroker-1.1.lua` and `LibDBIcon-1.0/lib.xml`
+
+---
+
+## [12.0.4-Beta] - 2026-04-06
 
 ### Changed
 - Minimap button: settings now open via **Shift+Left-click** (replaces middle-click)
@@ -10,28 +24,28 @@ All notable changes to Midnight Profession Tracker will be documented here.
 - `Settings.OpenToCategory` now correctly receives the numeric category ID via `:GetID()` instead of the raw category table, resolving a Lua error on open
 ---
 
-## [12.0.3-beta] - 2026-04-03
+## [12.0.3-Beta] - 2026-04-03
 
 ### Changed
 - Minimap button now stays on the border correctly whether your minimap is round or square
 
 ---
 
-## [12.0.2-beta] - 2026-04-03
+## [12.0.2-Beta] - 2026-04-03
 
 ### Changed
 - Version renamed to match the expansion format (`12.x.x` for The War Within / Midnight patch 12.0)
 
 ---
 
-## [12.0.1-beta] - 2026-04-03
+## [12.0.1-Beta] - 2026-04-03
 - Updated addon icon from `Trade_Alchemy` to `inv_toy_booklibrary` in both `## IconTexture` (.toc) and the minimap button texture
 - Fixed README Requirements section to correctly state "The War Within"
 
-## [12.0.0-beta] - 2026-04-02
+## [12.0.0-Beta] - 2026-04-02
 
 ### Added
-- Initial beta release
+- Initial beta
 - Tracks all 11 Midnight profession treasure items (8 per profession, 88 total)
 - Tracks purchaseable knowledge books (faction renown vendors and Echo of Abundance currency vendor)
 - Clickable world map waypoint pins in chat for every missing item and vendor

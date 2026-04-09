@@ -71,7 +71,7 @@ Stored per character via `SavedVariablesPerCharacter`:
 | Key | Default | Description |
 |---|---|---|
 | `autoRun` | `true` | Auto-display on login/reload |
-| `minimapAngle` | `220` | Minimap button position (degrees) |
+| `minimap` | `{ hide = false }` | Minimap button visibility (managed by LibDBIcon) |
 
 ## Releasing a New Version
 
@@ -101,7 +101,7 @@ World of Warcraft\_retail_\Interface\AddOns\
 ## Requirements
 
 - World of Warcraft: **Midnight** (Interface version 120001)
-- No external library dependencies — LibStub is bundled in `Libs/`
+- LibStub, LibDataBroker-1.1, and LibDBIcon-1.0 are all bundled in `Libs/` — no external dependencies required
 
 ## Authors
 

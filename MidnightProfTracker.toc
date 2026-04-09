@@ -2,11 +2,12 @@
 ## Title: Midnight Profession Treasure Tracker
 ## Notes: Shows missing Midnight profession treasures and adds waypoint map pins.
 ## Author: Frurox
-## Version: 12.0.4-beta
+## Version: 12.0.1-Release
 ## SavedVariablesPerCharacter: MPTCharDB
-## IconTexture: Interface\Icons\inv_toy_booklibrary
-## AddonCompartmentFunc: MidnightProfTracker_OnAddonCompartmentClick
+## IconTexture: Interface\AddOns\MidnightProfTracker\logo
 ## X-GitHub: https://github.com/Frurox/MidnightProfessionTracker
+## X-Curse-Project-ID: 1508602
+## X-Wago-ID: nKW3JoKE
 
 embeds.xml
 Locales\enUS.lua
