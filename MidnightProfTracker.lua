@@ -307,8 +307,6 @@ local function MidnightBooks(showAll)
 end
 
 -- PRE-CACHE ALL ITEM DATA
--- Calling GetItemInfo for each itemId queues an async server request so data
--- is ready by the time MidnightProf() runs.
 local function PrecacheAllItems()
   for _, treasures in pairs(ProfData) do
     for _, v in ipairs(treasures) do
@@ -323,7 +321,6 @@ local function PrecacheAllItems()
 end
 
 -- WAIT FOR ITEM CACHE, THEN RUN CALLBACK
--- Fires callback once every itemId has been cached, or after a 15s timeout.
 local function RunWhenItemsCached(callback)
   local needed = {}
   local count = 0
@@ -356,7 +353,6 @@ local function RunWhenItemsCached(callback)
     end
   end)
 
-  -- Safety: run after 15 s even if some items never returned data
   C_Timer.After(15, function()
     if not done then
       done = true
@@ -367,7 +363,6 @@ local function RunWhenItemsCached(callback)
 end
 
 -- PRINT TREASURES FOR ONE PROFESSION
--- showAll: if true, print even if player doesn't have the profession
 local function PrintProfession(profName, treasures, profNames, showAll)
   local playerHasProf = profNames[profName]
   if not showAll and not playerHasProf then return end
@@ -384,7 +379,6 @@ local function PrintProfession(profName, treasures, profNames, showAll)
     end
   end
 
-  -- Profession header with progress counter
   local profColor = playerHasProf and "|cff00ff00" or "|cffaaaaaa"
   local progress = string.format("|cffffd200(%d/%d)|r", collected, total)
   print(profColor .. profName .. "|r " .. progress)
@@ -394,7 +388,6 @@ local function PrintProfession(profName, treasures, profNames, showAll)
     return
   end
 
-  -- Sort missing items by zone name for easier navigation
   table.sort(missing, function(a, b)
     local mapA = C_Map.GetMapInfo(a.map)
     local mapB = C_Map.GetMapInfo(b.map)
@@ -416,7 +409,6 @@ local function PrintProfession(profName, treasures, profNames, showAll)
 end
 
 -- MAIN COMMAND
--- showAll: if true, show all professions regardless of whether player has them
 local function MidnightProf(showAll)
   local profNames = GetPlayerProfNames()
 
@@ -439,14 +431,17 @@ end
 
 -- SAVED VARIABLES
 local DB_DEFAULTS = {
-  autoRun      = true,
-  minimapAngle = 220,
+  autoRun = true,
+  minimap = { hide = false },
 }
 
 local function InitDB()
   if type(MPTCharDB) ~= "table" then MPTCharDB = {} end
   for k, v in pairs(DB_DEFAULTS) do
     if MPTCharDB[k] == nil then MPTCharDB[k] = v end
+  end
+  if type(MPTCharDB.minimap) ~= "table" then
+    MPTCharDB.minimap = { hide = false }
   end
 end
 
@@ -464,13 +459,6 @@ local function PrintHelp()
 end
 
 -- SLASH COMMANDS
---   /mpt              — show professions you have learned
---   /mpt all          — show all professions
---   /mpt books        — show purchaseable knowledge books
---   /mpt books all    — show all knowledge books
---   /mpt autorun      — toggle auto-run on login/reload
---   /mpt config       — open settings panel
---   /mpt help         — show help
 SLASH_MIDNIGHTPROF1 = "/mpt"
 SLASH_MIDNIGHTPROF2 = "/midnightprof"
 SlashCmdList["MIDNIGHTPROF"] = function(msg)
@@ -497,163 +485,62 @@ SlashCmdList["MIDNIGHTPROF"] = function(msg)
   end
 end
 
--- ADDON COMPARTMENT (TWW puzzle-piece icon in the top bar)
-function MidnightProfTracker_OnAddonCompartmentClick(addonName, button)
-  PrecacheAllItems()
-  if button == "RightButton" then
-    RunWhenItemsCached(function() MidnightBooks(false) end)
-  else
-    RunWhenItemsCached(function() MidnightProf(false) end)
-  end
-end
 
--- MINIMAP BUTTON
-local minimapButton = CreateFrame("Button", "MPTMinimapButton", Minimap)
-minimapButton:SetSize(32, 32)
-minimapButton:SetFrameStrata("MEDIUM")
-minimapButton:SetFrameLevel(8)
-minimapButton:SetClampedToScreen(false)
-
--- Icon
-local mmIcon = minimapButton:CreateTexture(nil, "BACKGROUND")
-mmIcon:SetTexture("Interface\\Icons\\inv_toy_booklibrary")
-mmIcon:SetSize(20, 20)
-mmIcon:SetPoint("CENTER")
-
--- Border ring
-local mmBorder = minimapButton:CreateTexture(nil, "OVERLAY")
-mmBorder:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-mmBorder:SetSize(56, 56)
-mmBorder:SetPoint("TOPLEFT")
-
--- Shape table: each entry lists the 4 quadrants (q=1..4) that are "round".
--- Quadrant is determined by sign of cos/sin: q=1 (x>=0,y<=0), +1 if x<0, +2 if y>0.
--- When a quadrant is round the button sits on the circular edge; otherwise it is
--- clamped to the square edge (matching LibDBIcon-1.0 behaviour).
-local minimapShapes = {
-  ["ROUND"]                = {true,  true,  true,  true },
-  ["SQUARE"]               = {false, false, false, false},
-  ["CORNER-TOPLEFT"]       = {false, false, false, true },
-  ["CORNER-TOPRIGHT"]      = {false, false, true,  false},
-  ["CORNER-BOTTOMLEFT"]    = {false, true,  false, false},
-  ["CORNER-BOTTOMRIGHT"]   = {true,  false, false, false},
-  ["SIDE-LEFT"]            = {false, true,  false, true },
-  ["SIDE-RIGHT"]           = {true,  false, true,  false},
-  ["SIDE-TOP"]             = {false, false, true,  true },
-  ["SIDE-BOTTOM"]          = {true,  true,  false, false},
-  ["TRICORNER-TOPLEFT"]    = {false, true,  true,  true },
-  ["TRICORNER-TOPRIGHT"]   = {true,  false, true,  true },
-  ["TRICORNER-BOTTOMLEFT"] = {true,  true,  false, true },
-  ["TRICORNER-BOTTOMRIGHT"]= {true,  true,  true,  false},
-}
-
--- Position the button on the minimap border, respecting the minimap shape.
--- 'angle' is in degrees (0-360, measured counter-clockwise from east).
-local function UpdateMinimapPos(angle)
-  angle = angle % 360
-  MPTCharDB.minimapAngle = angle
-  local rad = math.rad(angle)
-  local x, y = math.cos(rad), math.sin(rad)
-
-  -- Determine which quadrant we are in (1-4)
-  local q = 1
-  if x < 0 then q = q + 1 end
-  if y > 0 then q = q + 2 end
-
-  local shape      = GetMinimapShape and GetMinimapShape() or "ROUND"
-  local quadTable  = minimapShapes[shape] or minimapShapes["ROUND"]
-  -- Outer edge: half the minimap size plus a small gap (5 px, same as LibDBIcon)
-  local w = (Minimap:GetWidth()  / 2) + 5
-  local h = (Minimap:GetHeight() / 2) + 5
-
-  if quadTable[q] then
-    -- Circular quadrant: project straight onto the ellipse edge
-    x, y = x * w, y * h
-  else
-    -- Square quadrant: project the direction ray to the rectangle border
-    local scale = math.max(math.abs(x), math.abs(y))
-    if scale > 0 then
-      x = (x / scale) * w
-      y = (y / scale) * h
+-- MINIMAP BUTTON (via LibDataBroker + LibDBIcon)
+local MPT_LDB = LibStub("LibDataBroker-1.1"):NewDataObject("MidnightProfTracker", {
+  type  = "data source",
+  label = "Midnight Prof Tracker",
+  icon  = "Interface\\AddOns\\" .. addonName .. "\\logo",
+  OnClick = function(self, button)
+    PrecacheAllItems()
+    if button == "RightButton" then
+      RunWhenItemsCached(function() MidnightBooks(false) end)
+    elseif button == "LeftButton" and IsShiftKeyDown() then
+      if ns.optionsCategory then
+        Settings.OpenToCategory(ns.optionsCategory:GetID())
+      end
     else
-      x, y = 0, 0
+      RunWhenItemsCached(function() MidnightProf(false) end)
     end
-  end
+  end,
+  OnTooltipShow = function(tt)
+    tt:AddLine(L["MINIMAP_TOOLTIP_TITLE"], 1, 0.82, 0)
+    tt:AddLine(L["MINIMAP_TOOLTIP_LEFT"],  1, 1, 1)
+    tt:AddLine(L["MINIMAP_TOOLTIP_RIGHT"], 1, 1, 1)
+    tt:AddLine(L["MINIMAP_TOOLTIP_SETTINGS"], 1, 1, 1)
+    tt:AddLine(L["MINIMAP_TOOLTIP_DRAG"],  0.6, 0.6, 0.6)
+  end,
+})
+local LibDBIcon = LibStub("LibDBIcon-1.0")
 
-  minimapButton:ClearAllPoints()
-  minimapButton:SetPoint("CENTER", Minimap, "CENTER", x, y)
-end
-
--- Dragging
-local mmDragging = false
-minimapButton:RegisterForDrag("LeftButton")
-minimapButton:SetScript("OnDragStart", function(self)
-  mmDragging = true
-  self:SetScript("OnUpdate", function()
-    local mx, my = Minimap:GetCenter()
-    local cx, cy = GetCursorPosition()
-    -- Use the minimap's own effective scale for accurate cursor mapping
-    local scale  = Minimap:GetEffectiveScale()
-    local angle  = math.deg(math.atan2(cy / scale - my, cx / scale - mx)) % 360
-    UpdateMinimapPos(angle)
-  end)
-end)
-minimapButton:SetScript("OnDragStop", function(self)
-  mmDragging = false
-  self:SetScript("OnUpdate", nil)
-end)
-
--- Clicks
-minimapButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-minimapButton:SetScript("OnClick", function(self, button)
-  if mmDragging then return end
-  PrecacheAllItems()
-  if button == "RightButton" then
-    RunWhenItemsCached(function() MidnightBooks(false) end)
-  elseif button == "LeftButton" and IsShiftKeyDown() then
-    if ns.optionsCategory then
-      Settings.OpenToCategory(ns.optionsCategory:GetID())
-    end
-  else
-    RunWhenItemsCached(function() MidnightProf(false) end)
-  end
-end)
-
--- Tooltip
-minimapButton:SetScript("OnEnter", function(self)
-  GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-  GameTooltip:AddLine(L["MINIMAP_TOOLTIP_TITLE"],  1, 0.82, 0)
-  GameTooltip:AddLine(L["MINIMAP_TOOLTIP_LEFT"],   1, 1, 1)
-  GameTooltip:AddLine(L["MINIMAP_TOOLTIP_RIGHT"],  1, 1, 1)
-  GameTooltip:AddLine(L["MINIMAP_TOOLTIP_SETTINGS"], 1, 1, 1)
-  GameTooltip:AddLine(L["MINIMAP_TOOLTIP_DRAG"],   0.6, 0.6, 0.6)
-  GameTooltip:Show()
-end)
-minimapButton:SetScript("OnLeave", function()
-  GameTooltip:Hide()
-end)
-
--- EVENT HANDLER: ADDON_LOADED — initialise SavedVars as soon as they are available
+-- EVENT HANDLER
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("ADDON_LOADED")
-eventFrame:RegisterEvent("PLAYER_LOGIN")
 eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 eventFrame:SetScript("OnEvent", function(self, event, arg1, arg2)
 
   if event == "ADDON_LOADED" and arg1 == addonName then
     InitDB()
     PrecacheAllItems()
+    AddonCompartmentFrame:RegisterAddon({
+      text          = "Midnight Prof Tracker",
+      icon          = "Interface\\AddOns\\" .. addonName .. "\\logo",
+      notCheckable  = true,
+      func = function(_, _, _, _, button)
+        PrecacheAllItems()
+        if button == "RightButton" then
+          RunWhenItemsCached(function() MidnightBooks(false) end)
+        else
+          RunWhenItemsCached(function() MidnightProf(false) end)
+        end
+      end,
+    })
+    LibDBIcon:Register("MidnightProfTracker", MPT_LDB, MPTCharDB.minimap)
     self:UnregisterEvent("ADDON_LOADED")
-
-  elseif event == "PLAYER_LOGIN" then
-    -- Restore minimap button position from saved angle
-    UpdateMinimapPos(MPTCharDB.minimapAngle or 220)
-    self:UnregisterEvent("PLAYER_LOGIN")
 
   elseif event == "PLAYER_ENTERING_WORLD" then
     local isInitialLogin, isReloadingUi = arg1, arg2
     if (isInitialLogin or isReloadingUi) and MPTCharDB.autoRun then
-      -- Small delay so the chat frame is ready, then wait for item cache
       C_Timer.After(3, function()
         PrecacheAllItems()
         RunWhenItemsCached(function()
