@@ -435,13 +435,27 @@ local DB_DEFAULTS = {
   minimap = { hide = false },
 }
 
+local function DeepCopy(orig)
+  local copy = {}
+  for k, v in pairs(orig) do
+    copy[k] = type(v) == "table" and DeepCopy(v) or v
+  end
+  return copy
+end
+
 local function InitDB()
   if type(MPTCharDB) ~= "table" then MPTCharDB = {} end
   for k, v in pairs(DB_DEFAULTS) do
-    if MPTCharDB[k] == nil then MPTCharDB[k] = v end
+    if MPTCharDB[k] == nil then
+      MPTCharDB[k] = type(v) == "table" and DeepCopy(v) or v
+    end
   end
   if type(MPTCharDB.minimap) ~= "table" then
     MPTCharDB.minimap = { hide = false }
+  end
+  if MPTCharDB.minimap.minimapPos == nil and MPTCharDB.minimapAngle ~= nil then
+    MPTCharDB.minimap.minimapPos = MPTCharDB.minimapAngle
+    MPTCharDB.minimapAngle = nil
   end
 end
 
@@ -523,10 +537,12 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, arg2)
     InitDB()
     PrecacheAllItems()
     AddonCompartmentFrame:RegisterAddon({
-      text          = "Midnight Prof Tracker",
-      icon          = "Interface\\AddOns\\" .. addonName .. "\\logo",
-      notCheckable  = true,
-      func = function(_, _, _, _, button)
+      text                = "Midnight Prof Tracker",
+      icon                = "Interface\\AddOns\\" .. addonName .. "\\logo",
+      notCheckable        = true,
+      registerForAnyClick = true,
+      func = function(_, menuInputData, _)
+        local button = menuInputData and menuInputData.buttonName
         PrecacheAllItems()
         if button == "RightButton" then
           RunWhenItemsCached(function() MidnightBooks(false) end)
