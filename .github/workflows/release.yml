@@ -4,9 +4,16 @@ on:
   push:
     tags:
       - 'v*'
+    paths-ignore:
+      - '.github/**'
 
 permissions:
   contents: write
+
+env:
+  CURSEFORGE_API_TOKEN: ${{ secrets.CURSEFORGE_API_TOKEN }}
+  WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+  WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
 
 jobs:
   release:
@@ -52,6 +59,3 @@ jobs:
 
       - name: Create Package
         uses: BigWigsMods/packager@master
-        env:
-          # This section might already create other env variables, just append the WAGO_API_TOKEN to these
-          WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
