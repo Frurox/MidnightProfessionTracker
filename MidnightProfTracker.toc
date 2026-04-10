@@ -8,6 +8,7 @@
 ## X-GitHub: https://github.com/Frurox/MidnightProfessionTracker
 ## X-Curse-Project-ID: 1508602
 ## X-Wago-ID: nKW3JoKE
+## X-WoWI-ID: 27112
 
 embeds.xml
 Locales\enUS.lua
