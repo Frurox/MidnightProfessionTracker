@@ -47,7 +47,7 @@ jobs:
       - name: Upload to CurseForge
         uses: itsmeow/curseforge-upload@v3
         with:
-          token: ${{ secrets.CF_API_KEY }}
+          token: ${{ secrets.CURSEFORGE_API_TOKEN }}
           project_id: 1508602
           game_endpoint: wow
           file_path: ${{ steps.vars.outputs.zip_name }}
