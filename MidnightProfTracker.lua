@@ -306,6 +306,33 @@ local function MidnightBooks(showAll)
   print(string.format("|cffffd200" .. L["TOTAL_PURCHASED"] .. "|r", totalBought, totalBought + totalMissing))
 end
 
+-- CHECK IF THERE ARE MISSING TREASURES / BOOKS FOR THE PLAYER'S PROFESSIONS
+local function HasMissingTreasures(profNames)
+  for profName, treasures in pairs(ProfData) do
+    if profNames[profName] then
+      for _, v in ipairs(treasures) do
+        if not C_QuestLog.IsQuestFlaggedCompleted(v.id) then
+          return true
+        end
+      end
+    end
+  end
+  return false
+end
+
+local function HasMissingBooks(profNames)
+  for profName, books in pairs(BookData) do
+    if profNames[profName] then
+      for _, v in ipairs(books) do
+        if not C_QuestLog.IsQuestFlaggedCompleted(v.id) then
+          return true
+        end
+      end
+    end
+  end
+  return false
+end
+
 -- PRE-CACHE ALL ITEM DATA
 local function PrecacheAllItems()
   for _, treasures in pairs(ProfData) do
@@ -560,8 +587,12 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, arg2)
       C_Timer.After(3, function()
         PrecacheAllItems()
         RunWhenItemsCached(function()
-          MidnightProf(false)
-          MidnightBooks(false)
+          local profNames = GetPlayerProfNames()
+          local missingTreasures = HasMissingTreasures(profNames)
+          local missingBooks     = HasMissingBooks(profNames)
+          if not missingTreasures and not missingBooks then return end
+          if missingTreasures then MidnightProf(false) end
+          if missingBooks     then MidnightBooks(false) end
         end)
       end)
     end

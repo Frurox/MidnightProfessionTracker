@@ -2,6 +2,14 @@
 
 All notable changes to Midnight Profession Tracker will be documented here.
 
+## [12.0.2-Release] - 2026-04-13
+
+### Changed
+- Auto-run on login/reload is now silently skipped when all treasures and books for the player's learned professions are already collected — no more "all collected" spam on reload
+- Each section (treasures / books) is evaluated independently; only sections with missing items are shown
+
+---
+
 ## [12.0.1-Release] - 2026-04-08
 
 ### Changed
