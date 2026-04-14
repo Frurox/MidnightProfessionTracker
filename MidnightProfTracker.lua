@@ -585,12 +585,12 @@ eventFrame:SetScript("OnEvent", function(self, event, arg1, arg2)
     local isInitialLogin, isReloadingUi = arg1, arg2
     if (isInitialLogin or isReloadingUi) and MPTCharDB.autoRun then
       C_Timer.After(3, function()
+        local profNames = GetPlayerProfNames()
+        local missingTreasures = HasMissingTreasures(profNames)
+        local missingBooks     = HasMissingBooks(profNames)
+        if not missingTreasures and not missingBooks then return end
         PrecacheAllItems()
         RunWhenItemsCached(function()
-          local profNames = GetPlayerProfNames()
-          local missingTreasures = HasMissingTreasures(profNames)
-          local missingBooks     = HasMissingBooks(profNames)
-          if not missingTreasures and not missingBooks then return end
           if missingTreasures then MidnightProf(false) end
           if missingBooks     then MidnightBooks(false) end
         end)
