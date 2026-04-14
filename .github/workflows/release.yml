@@ -63,7 +63,7 @@ jobs:
             -F "file=@${{ steps.vars.outputs.zip_name }}" \
             -F "stability=stable" \
             -F "label=${{ steps.vars.outputs.tag }}" \
-            "https://addons.wago.io/api/publish/nKW3JoKE"
+            "https://addons.wago.io/api/addons/nKW3JoKE/version"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
