@@ -10,7 +10,7 @@ A World of Warcraft addon for **The War Within / Midnight** that tracks missing 
 - **Minimap Button** — Draggable button on the minimap (left-click: treasures, right-click: books, Shift+Left-click: settings). Position is saved per character.
 - **Addon Compartment Button** — Click the puzzle-piece icon in the top bar (left-click: treasures, right-click: books). No slash command needed.
 - **Settings Panel** — Accessible via `/mpt config`, Shift+Left-click on the minimap button, or Game Menu → Interface → AddOns.
-- **Auto-run on Login/Reload** — Automatically shows missing items on login or UI reload. Toggleable per character via settings or `/mpt autorun`.
+- **Auto-run on Login/Reload** — Automatically shows missing items on login or UI reload. Silently skipped when all treasures and books for your professions are already collected. Toggleable per character via settings or `/mpt autorun`.
 - **Per-character Tracking** — `SavedVariablesPerCharacter` tracks the auto-run preference and minimap button position independently per character.
 - **Renown Lock Detection** — Knowledge book vendor renown requirements display green (unlocked) or red (locked) based on your current standing.
 
