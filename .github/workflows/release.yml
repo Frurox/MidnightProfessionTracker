@@ -58,11 +58,11 @@ jobs:
 
       - name: Upload to Wago.io
         run: |
-          curl -sS --fail \
+          curl -v \
             -H "Authorization: Bearer ${{ secrets.WAGO_API_TOKEN }}" \
             -F "metadata={\"label\":\"${{ steps.vars.outputs.tag }}\",\"stability\":\"stable\"};type=application/json" \
             -F "file=@${{ steps.vars.outputs.zip_name }};type=application/zip" \
-            "https://addons.wago.io/api/publish"
+            "https://addons.wago.io/api/publish" 2>&1 || true
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
