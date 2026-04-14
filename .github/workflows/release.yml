@@ -45,16 +45,9 @@ jobs:
           zip -r "${GITHUB_WORKSPACE}/${ZIP_NAME}" "${ADDON_NAME}"
 
       - name: Upload to CurseForge
-        uses: itsmeow/curseforge-upload@v3
-        with:
-          token: ${{ secrets.CURSEFORGE_API_TOKEN }}
-          project_id: 1508602
-          game_endpoint: wow
-          file_path: ${{ steps.vars.outputs.zip_name }}
-          display_name: ${{ steps.vars.outputs.tag }}
-          game_versions: "12.0.0, 12.0.1"
-          release_type: release
-          changelog: "See the GitHub release for full changelog."
+        uses: BigWigsMods/packager@v2
+        env:
+          CF_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
 
       - name: Upload to Wago.io
         uses: BigWigsMods/packager@v2
